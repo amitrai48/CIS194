@@ -51,9 +51,9 @@ createRoot logMessage = Node Leaf logMessage Leaf
 insert :: LogMessage -> MessageTree -> MessageTree
 insert (Unknown _ ) tree = tree
 insert logMessage Leaf = createRoot logMessage
-insert logMessage@(LogMessage _ newLogTimestamp _) (Node leftTree tlog@(LogMessage _ timestamp _) rightTree) = case newLogTimestamp < timestamp of
-  True -> Node (insert logMessage leftTree) tlog rightTree
-  False -> Node leftTree tlog (insert logMessage rightTree)
+insert logMessage@(LogMessage _ newLogTimestamp _) (Node leftTree tlog@(LogMessage _ timestamp _) rightTree)
+  | newLogTimestamp < timestamp = Node (insert logMessage leftTree) tlog rightTree
+  | otherwise = Node leftTree tlog (insert logMessage rightTree)
 insert _ tree = tree
 
 buildMessageTree :: MessageTree -> [LogMessage] -> MessageTree
@@ -73,10 +73,10 @@ isSevere _ _ = False
  
 filterLogMessageBySeverity :: [LogMessage] -> Int -> [LogMessage]
 filterLogMessageBySeverity [] _= []
-filterLogMessageBySeverity (logMessage:rest) minSeverity = case isSevere logMessage minSeverity of
-  True -> logMessage : filterLogMessageBySeverity rest minSeverity
-  False -> filterLogMessageBySeverity rest minSeverity
-
+filterLogMessageBySeverity (logMessage:rest) minSeverity
+  | isSevere logMessage minSeverity = logMessage : filterLogMessageBySeverity rest minSeverity
+  | otherwise = filterLogMessageBySeverity rest minSeverity
+  
 stringifyLogMessages :: [LogMessage] -> [String]
 stringifyLogMessages [] = []
 stringifyLogMessages (LogMessage _ _ message : rest) = message : stringifyLogMessages rest
