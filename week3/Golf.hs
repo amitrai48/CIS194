@@ -24,3 +24,17 @@ skip as i = map snd (filter (\(x,_) -> x `mod` i == 0) (zip [1..] as))
 -}
 skips :: [a] -> [[a]]
 skips as = map (skip as) [1..(length as)]
+
+{-
+localMaxima is defined as a recursive function which expects atleast 3 elems in
+  a list and if the 2nd element is a local maxima cons this elem to the 
+  returning list. Anything other than 3 elems returns an empty array. The func
+  is called recusrively with 2nd elem and the rest of the list. 
+-}
+
+localMaxima :: [Integer] -> [Integer]
+localMaxima [] = []
+localMaxima (x:y:z:zs) 
+  | x < y && y > z = y : localMaxima (y:z:zs)
+  | otherwise = localMaxima (y:z:zs)
+localMaxima _ = []
